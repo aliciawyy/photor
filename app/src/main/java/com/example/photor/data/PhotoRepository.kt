@@ -8,48 +8,52 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 
 private const val TAG = "PhotoRepository"
-private const val FLICKR_URL = "https://www.flickr.com"
+private const val FLICKR_URL = "https://api.flickr.com"
 
-class PhotoRepository {
+
+class PhotoRepository private constructor() {
 
     private val flickrApi: FlickrApi
 
     init {
         val retrofit: Retrofit = Retrofit.Builder()
             .baseUrl(FLICKR_URL)
-            .addConverterFactory(ScalarsConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create())
             .build()
         flickrApi = retrofit.create(FlickrApi::class.java)
     }
 
-    fun fetchContent() : LiveData<String> {
-        val flickrCall = flickrApi.fetchContents()
-        val responseLiveData = MutableLiveData<String>()
+    fun fetchPhotos() : LiveData<List<FlickrPhotoItem>> {
+        val flickrCall = flickrApi.fetchPhotos()
+        val responseLiveData = MutableLiveData<List<FlickrPhotoItem>>()
         // Execute the web request represented by the call object (flickrCall here)
         // enqueue(...) is executed in a background thread
-        flickrCall.enqueue(object : Callback<String> {
-            override fun onFailure(call: Call<String>, t: Throwable) {
+        flickrCall.enqueue(object : Callback<FlickrResponse> {
+            override fun onFailure(call: Call<FlickrResponse>, t: Throwable) {
                 Log.e(TAG, "failed to fetch the photos: $t")
             }
 
-            override fun onResponse(call: Call<String>, response: Response<String>) {
-                Log.d(TAG, "Response received ${response.body()}")
-                responseLiveData.value = response.body()
+            override fun onResponse(call: Call<FlickrResponse>, response: Response<FlickrResponse>) {
+                responseLiveData.value = response.body()?.photos?.photoItems?.filterNot {
+                    it.url.isBlank() } ?: emptyList()
             }
         })
         return responseLiveData
     }
 
     companion object {
-        private lateinit var instance: PhotoRepository
+        private var instance: PhotoRepository? = null
 
-        fun initialize() = synchronized(this) {
-            instance = PhotoRepository()
+        fun initialize() {
+            require(instance == null) { "PhotoRepository is already initialized." }
+            synchronized(this) {
+                instance = PhotoRepository()
+            }
         }
 
-        fun get() : PhotoRepository = instance
+        fun get() : PhotoRepository = instance!!
     }
 }

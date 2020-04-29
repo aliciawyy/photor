@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,13 +18,13 @@ private const val TAG = "PhotoGalleryFragment"
 class PhotoGalleryFragment : Fragment() {
 
     private lateinit var photoRecyclerView: RecyclerView
+    private val photoViewModel: PhotoViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        PhotoRepository.initialize()
-        PhotoRepository.get().fetchContent().observe(
+        PhotoRepository.get().fetchPhotos().observe(
             this,
-            Observer { responseString -> Log.d(TAG, "get response = $responseString")  }
+            Observer { photoList -> Log.d(TAG, "get ${photoList.size} Photos from flickr: $photoList")  }
         )
     }
 
