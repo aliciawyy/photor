@@ -7,10 +7,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.photor.flickr.FlickrFetcher
 
 class PhotoGalleryFragment : Fragment() {
 
     private lateinit var photoRecyclerView: RecyclerView
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val flickrFetcher = FlickrFetcher()
+        flickrFetcher.fetchContent()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
