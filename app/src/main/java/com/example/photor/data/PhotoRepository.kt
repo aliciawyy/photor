@@ -37,6 +37,7 @@ class PhotoRepository private constructor() {
             }
 
             override fun onResponse(call: Call<FlickrResponse>, response: Response<FlickrResponse>) {
+                Log.d(TAG, "Response received.")
                 responseLiveData.value = response.body()?.photos?.photoItems?.filterNot {
                     it.url.isBlank() } ?: emptyList()
             }
@@ -48,9 +49,10 @@ class PhotoRepository private constructor() {
         private var instance: PhotoRepository? = null
 
         fun initialize() {
-            require(instance == null) { "PhotoRepository is already initialized." }
-            synchronized(this) {
-                instance = PhotoRepository()
+            if (instance == null) {
+                synchronized(this) {
+                    instance = PhotoRepository()
+                }
             }
         }
 
