@@ -1,4 +1,4 @@
-package com.example.photor.flickr
+package com.example.photor.data
 
 import retrofit2.Call
 import retrofit2.http.GET
