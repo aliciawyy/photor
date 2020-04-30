@@ -1,14 +1,19 @@
 package com.example.photor.data
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
+import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import okhttp3.ResponseBody
 
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Url
 
 private const val TAG = "PhotoRepository"
 private const val FLICKR_URL = "https://api.flickr.com"
@@ -43,6 +48,14 @@ class PhotoRepository private constructor() {
             }
         })
         return responseLiveData
+    }
+
+    @WorkerThread
+    fun fetchPhoto(@Url url: String): Bitmap? {
+        val response: Response<ResponseBody> = flickrApi.fetchBytesFromUrl(url).execute()
+        val bitmap = response.body()?.byteStream()?.use(BitmapFactory::decodeStream)
+        Log.d(TAG, "Decoded bitmap=$bitmap from Response=$response")
+        return bitmap
     }
 
     companion object {
