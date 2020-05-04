@@ -1,5 +1,7 @@
 package com.example.photor
 
+import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.photor.data.PhotoRepository
@@ -11,5 +13,9 @@ class MainActivity : AppCompatActivity() {
     Timber.plant(Timber.DebugTree())
     PhotoRepository.initialize()
     setContentView(R.layout.activity_main)
+  }
+
+  companion object {
+    fun newIntent(context: Context) = Intent(context, MainActivity::class.java)
   }
 }
