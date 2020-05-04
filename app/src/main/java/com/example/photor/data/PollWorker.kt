@@ -11,6 +11,7 @@ import com.example.photor.NOTIFICATION_CHANNEL_ID
 import com.example.photor.R
 import timber.log.Timber
 
+
 class PollWorker(private val context: Context, workerParameters: WorkerParameters)
     : Worker(context, workerParameters){
     override fun doWork(): Result {

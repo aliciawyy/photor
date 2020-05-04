@@ -6,4 +6,6 @@
     <string name="notification_channel_name">PhotorUpdate</string>
     <string name="new_picture_title">New Photor Picture</string>
     <string name="new_picture_text">You have new pictures for the keyword \'%1$s\'.</string>
+    <string name="start_polling">Start polling</string>
+    <string name="stop_polling">Stop polling</string>
 </resources>

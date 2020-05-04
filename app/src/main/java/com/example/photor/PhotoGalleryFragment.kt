@@ -11,11 +11,13 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.work.*
 import com.example.photor.data.FlickrPhotoItem
+import com.example.photor.data.PhotorPreferences
 import com.example.photor.data.PollWorker
 import com.squareup.picasso.Picasso
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
-private const val TAG = "PhotoGalleryFragment"
+private const val POLL_WORK = "PollWork"
 
 class PhotoGalleryFragment : Fragment() {
 
@@ -25,13 +27,6 @@ class PhotoGalleryFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.UNMETERED)
-            .build()
-        val workRequest: WorkRequest = OneTimeWorkRequest.Builder(PollWorker::class.java)
-            .setConstraints(constraints)
-            .build()
-        WorkManager.getInstance(requireContext()).enqueue(workRequest)
     }
 
     override fun onCreateView(
@@ -80,6 +75,13 @@ class PhotoGalleryFragment : Fragment() {
                 searchView.setQuery(photoViewModel.searchQueryText, false)
             }
         }
+        menu.findItem(R.id.menu_toggle_polling).setTitle(
+            if (PhotorPreferences.isPolling(requireContext())) {
+                R.string.stop_polling
+            } else {
+                R.string.start_polling
+            }
+        )
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -88,6 +90,30 @@ class PhotoGalleryFragment : Fragment() {
                 photoViewModel.searchPhotos("")
                 true
             }
+            R.id.menu_toggle_polling -> {
+                val isPooling = PhotorPreferences.isPolling(requireContext())
+                if (isPooling) {
+                    WorkManager.getInstance(requireContext()).cancelUniqueWork(POLL_WORK)
+                    PhotorPreferences.setPolling(requireContext(), false)
+                } else {
+                    val constraints = Constraints.Builder()
+                        .setRequiredNetworkType(NetworkType.UNMETERED)
+                        .build()
+                    val workRequest = PeriodicWorkRequest
+                        .Builder(PollWorker::class.java, 2, TimeUnit.MINUTES)
+                        .setConstraints(constraints)
+                        .build()
+                    WorkManager.getInstance(requireContext()).enqueueUniquePeriodicWork(
+                        POLL_WORK,
+                        ExistingPeriodicWorkPolicy.KEEP,
+                        workRequest
+                    )
+                    PhotorPreferences.setPolling(requireContext(), true)
+                }
+                activity?.invalidateOptionsMenu()
+                true
+            }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
