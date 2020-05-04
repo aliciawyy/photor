@@ -1,11 +1,37 @@
 package com.example.photor
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import android.util.Log
+import androidx.lifecycle.*
 import com.example.photor.data.FlickrPhotoItem
 import com.example.photor.data.PhotoRepository
+import com.example.photor.data.PhotorPreferences
 
-class PhotoViewModel(): ViewModel() {
+private const val TAG = "PhotoViewModel"
 
-    val photoList: LiveData<List<FlickrPhotoItem>> = PhotoRepository.get().fetchPhotos()
+class PhotoViewModel(private val app: Application): AndroidViewModel(app) {
+
+    val photoList: LiveData<List<FlickrPhotoItem>>
+    private val queryText = MutableLiveData<String>()
+
+    val searchQueryText
+        get() = queryText.value ?: ""
+
+    init {
+        queryText.value = PhotorPreferences.getStoredQuery(app)
+        photoList = Transformations.switchMap(queryText) {
+            Log.d(TAG, "query text = $it")
+            if (it.isBlank()) {
+                PhotoRepository.get().fetchPhotos()
+            } else {
+                PhotoRepository.get().searchPhotos(it)
+            }
+        }
+    }
+
+    fun searchPhotos(query: String) {
+        PhotorPreferences.setStoredQuery(app, query)
+        queryText.value = query
+    }
+
 }

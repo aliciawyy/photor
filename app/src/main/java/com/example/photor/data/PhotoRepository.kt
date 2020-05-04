@@ -36,8 +36,12 @@ class PhotoRepository private constructor() {
         flickrApi = retrofit.create(FlickrApi::class.java)
     }
 
-    fun fetchPhotos() : LiveData<List<FlickrPhotoItem>> {
-        val flickrCall = flickrApi.fetchPhotos()
+    fun fetchPhotos() : LiveData<List<FlickrPhotoItem>> = getPhotos(flickrApi.fetchPhotos())
+
+    fun searchPhotos(query: String): LiveData<List<FlickrPhotoItem>> =
+      getPhotos(flickrApi.searchPhotos(query))
+
+    private fun getPhotos(flickrCall: Call<FlickrResponse>): LiveData<List<FlickrPhotoItem>> {
         val responseLiveData = MutableLiveData<List<FlickrPhotoItem>>()
         // Execute the web request represented by the call object (flickrCall here)
         // enqueue(...) is executed in a background thread
@@ -47,7 +51,7 @@ class PhotoRepository private constructor() {
             }
 
             override fun onResponse(call: Call<FlickrResponse>, response: Response<FlickrResponse>) {
-                Log.d(TAG, "Response received.")
+                Log.d(TAG, "Response received = ${response.body()}")
                 responseLiveData.value = response.body()?.photos?.photoItems?.filterNot {
                     it.url.isBlank() } ?: emptyList()
             }
