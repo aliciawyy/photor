@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 
 import retrofit2.Call
@@ -24,9 +25,13 @@ class PhotoRepository private constructor() {
     private val flickrApi: FlickrApi
 
     init {
+        val client = OkHttpClient.Builder()
+          .addInterceptor(FlickrInterceptor())
+          .build()
         val retrofit: Retrofit = Retrofit.Builder()
             .baseUrl(FLICKR_URL)
             .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
             .build()
         flickrApi = retrofit.create(FlickrApi::class.java)
     }

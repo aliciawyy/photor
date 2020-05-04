@@ -7,12 +7,7 @@ import retrofit2.http.Url
 
 interface FlickrApi {
 
-    @GET("services/rest/?method=flickr.interestingness.getList" +
-            "&api_key=$FLICKR_API_KEY" +
-            "&format=json" +
-            "&nojsoncallback=1" +
-            "&extras=url_s"
-    )
+    @GET("services/rest/?method=flickr.interestingness.getList")
     fun fetchPhotos(): Call<FlickrResponse>
 
     @GET
