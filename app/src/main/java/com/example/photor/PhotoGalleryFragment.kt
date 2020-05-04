@@ -1,7 +1,6 @@
 package com.example.photor
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
@@ -10,8 +9,11 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.work.*
 import com.example.photor.data.FlickrPhotoItem
+import com.example.photor.data.PollWorker
 import com.squareup.picasso.Picasso
+import timber.log.Timber
 
 private const val TAG = "PhotoGalleryFragment"
 
@@ -23,6 +25,13 @@ class PhotoGalleryFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.UNMETERED)
+            .build()
+        val workRequest: WorkRequest = OneTimeWorkRequest.Builder(PollWorker::class.java)
+            .setConstraints(constraints)
+            .build()
+        WorkManager.getInstance(requireContext()).enqueue(workRequest)
     }
 
     override fun onCreateView(
@@ -54,7 +63,7 @@ class PhotoGalleryFragment : Fragment() {
         searchView.apply {
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
-                    Log.d(TAG, "onQueryTextSubmit: query = $query")
+                    Timber.d("onQueryTextSubmit: query = $query")
                     if (query != null) {
                         this@PhotoGalleryFragment.photoViewModel.searchPhotos(query)
                     }
@@ -62,7 +71,7 @@ class PhotoGalleryFragment : Fragment() {
                 }
 
                 override fun onQueryTextChange(newText: String?): Boolean {
-                    Log.d(TAG, "onQueryTextChange: newText = $newText")
+                    Timber.d("onQueryTextChange: newText = $newText")
                     return false
                 }
             })

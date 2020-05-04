@@ -1,13 +1,12 @@
 package com.example.photor
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.*
 import com.example.photor.data.FlickrPhotoItem
 import com.example.photor.data.PhotoRepository
 import com.example.photor.data.PhotorPreferences
+import timber.log.Timber
 
-private const val TAG = "PhotoViewModel"
 
 class PhotoViewModel(private val app: Application): AndroidViewModel(app) {
 
@@ -20,7 +19,7 @@ class PhotoViewModel(private val app: Application): AndroidViewModel(app) {
     init {
         queryText.value = PhotorPreferences.getStoredQuery(app)
         photoList = Transformations.switchMap(queryText) {
-            Log.d(TAG, "query text = $it")
+            Timber.d("query text = $it")
             if (it.isBlank()) {
                 PhotoRepository.get().fetchPhotos()
             } else {

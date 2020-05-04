@@ -2,7 +2,6 @@ package com.example.photor.data
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -15,8 +14,8 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Url
+import timber.log.Timber
 
-private const val TAG = "PhotoRepository"
 private const val FLICKR_URL = "https://api.flickr.com"
 
 
@@ -36,10 +35,14 @@ class PhotoRepository private constructor() {
         flickrApi = retrofit.create(FlickrApi::class.java)
     }
 
-    fun fetchPhotos() : LiveData<List<FlickrPhotoItem>> = getPhotos(flickrApi.fetchPhotos())
+    fun fetchPhotos() : LiveData<List<FlickrPhotoItem>> = getPhotos(fetchPhotosRequest())
+
+    fun fetchPhotosRequest(): Call<FlickrResponse> = flickrApi.fetchPhotos()
 
     fun searchPhotos(query: String): LiveData<List<FlickrPhotoItem>> =
-      getPhotos(flickrApi.searchPhotos(query))
+      getPhotos(searchPhotosRequest(query))
+
+    fun searchPhotosRequest(query: String): Call<FlickrResponse> = flickrApi.searchPhotos(query)
 
     private fun getPhotos(flickrCall: Call<FlickrResponse>): LiveData<List<FlickrPhotoItem>> {
         val responseLiveData = MutableLiveData<List<FlickrPhotoItem>>()
@@ -47,11 +50,11 @@ class PhotoRepository private constructor() {
         // enqueue(...) is executed in a background thread
         flickrCall.enqueue(object : Callback<FlickrResponse> {
             override fun onFailure(call: Call<FlickrResponse>, t: Throwable) {
-                Log.e(TAG, "failed to fetch the photos: $t")
+                Timber.e("failed to fetch the photos: $t")
             }
 
             override fun onResponse(call: Call<FlickrResponse>, response: Response<FlickrResponse>) {
-                Log.d(TAG, "Response received = ${response.body()}")
+                Timber.d("Response received = ${response.body()}")
                 responseLiveData.value = response.body()?.photos?.photoItems?.filterNot {
                     it.url.isBlank() } ?: emptyList()
             }
@@ -63,7 +66,7 @@ class PhotoRepository private constructor() {
     fun fetchPhoto(@Url url: String): Bitmap? {
         val response: Response<ResponseBody> = flickrApi.fetchBytesFromUrl(url).execute()
         val bitmap = response.body()?.byteStream()?.use(BitmapFactory::decodeStream)
-        Log.d(TAG, "Decoded bitmap=$bitmap from Response=$response")
+        Timber.d("Decoded bitmap=$bitmap from Response=$response")
         return bitmap
     }
 
