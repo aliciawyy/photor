@@ -1,22 +1,23 @@
-package com.example.photor.data
+package com.example.photor
 
 import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import com.example.photor.MainActivity
-import com.example.photor.NOTIFICATION_CHANNEL_ID
-import com.example.photor.R
+import com.example.photor.data.FlickrPhotoItem
+import com.example.photor.data.PhotoRepository
+import com.example.photor.data.PhotorPreferences
 import timber.log.Timber
 
 
 class PollWorker(private val context: Context, workerParameters: WorkerParameters)
     : Worker(context, workerParameters){
     override fun doWork(): Result {
-        Timber.d("called doWork")
-        val query = PhotorPreferences.getStoredQuery(context)
+        val query =
+            PhotorPreferences.getStoredQuery(context)
 
         val flickrRequest = if (query.isEmpty()) {
             PhotoRepository.get().fetchPhotosRequest()
@@ -26,13 +27,17 @@ class PollWorker(private val context: Context, workerParameters: WorkerParameter
 
         val photoItems: List<FlickrPhotoItem> = flickrRequest.execute().body()?.photos?.photoItems
             ?: return Result.success()
-        val lastResultId = PhotorPreferences.getLastResultId(context)
-        val currentLastResultId = photoItems.last().id
+        val lastResultId =
+            PhotorPreferences.getLastResultId(context)
+        val currentLastResultId = photoItems.first().id
         if (currentLastResultId == lastResultId) {
             Timber.d("nothing new.")
         } else {
             Timber.d("Got a new result: $currentLastResultId")
-            PhotorPreferences.setLastResultId(context, currentLastResultId)
+            PhotorPreferences.setLastResultId(
+                context,
+                currentLastResultId
+            )
 
             val pendingIntent = PendingIntent.getActivity(
                 context, 0, MainActivity.newIntent(context), 0)
@@ -46,8 +51,19 @@ class PollWorker(private val context: Context, workerParameters: WorkerParameter
                 .setAutoCancel(true)
                 .build()
 
-            NotificationManagerCompat.from(context).notify(0, notification)
+            val intent = Intent(ACTION_SHOW_NOTIFICATION).apply {
+                putExtra(NOTIFICATION, notification)
+                putExtra(REQUEST_CODE, 0)
+            }
+            context.sendBroadcast(intent, PERM_PRIVATE)
         }
         return Result.success()
+    }
+
+    companion object {
+        const val ACTION_SHOW_NOTIFICATION = "com.example.photor.SHOW_NOTIFICATION"
+        const val PERM_PRIVATE = "com.example.photor.PRIVATE"
+        const val REQUEST_CODE = "REQUEST_CODE"
+        const val NOTIFICATION = "NOTIFICATION"
     }
 }

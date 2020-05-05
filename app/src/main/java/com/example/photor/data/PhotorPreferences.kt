@@ -19,7 +19,8 @@ object PhotorPreferences {
         setString(context, PREF_LAST_RESULT_ID, lastResultId)
 
     fun isPolling(context: Context): Boolean =
-        PreferenceManager.getDefaultSharedPreferences(context).getBoolean(PREF_IS_POLLING, false)
+        PreferenceManager.getDefaultSharedPreferences(context)
+            .getBoolean(PREF_IS_POLLING, false)
 
     fun setPolling(context: Context, isPolling: Boolean) {
         PreferenceManager.getDefaultSharedPreferences(context)

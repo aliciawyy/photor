@@ -3,7 +3,6 @@ package com.example.photor
 import android.os.Bundle
 import android.view.*
 import android.widget.ImageView
-import androidx.fragment.app.Fragment
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -12,14 +11,13 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.work.*
 import com.example.photor.data.FlickrPhotoItem
 import com.example.photor.data.PhotorPreferences
-import com.example.photor.data.PollWorker
 import com.squareup.picasso.Picasso
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 private const val POLL_WORK = "PollWork"
 
-class PhotoGalleryFragment : Fragment() {
+class PhotoGalleryFragment : VisibleFragment() {
 
     private lateinit var photoRecyclerView: RecyclerView
     private val photoViewModel: PhotoViewModel by activityViewModels()
@@ -100,7 +98,7 @@ class PhotoGalleryFragment : Fragment() {
                         .setRequiredNetworkType(NetworkType.UNMETERED)
                         .build()
                     val workRequest = PeriodicWorkRequest
-                        .Builder(PollWorker::class.java, 2, TimeUnit.MINUTES)
+                        .Builder(PollWorker::class.java, 1, TimeUnit.MINUTES)
                         .setConstraints(constraints)
                         .build()
                     WorkManager.getInstance(requireContext()).enqueueUniquePeriodicWork(
