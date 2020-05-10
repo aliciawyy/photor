@@ -7,7 +7,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
-
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -18,15 +17,14 @@ import timber.log.Timber
 
 private const val FLICKR_URL = "https://api.flickr.com"
 
-
 class PhotoRepository private constructor() {
 
     private val flickrApi: FlickrApi
 
     init {
         val client = OkHttpClient.Builder()
-          .addInterceptor(FlickrInterceptor())
-          .build()
+            .addInterceptor(FlickrInterceptor())
+            .build()
         val retrofit: Retrofit = Retrofit.Builder()
             .baseUrl(FLICKR_URL)
             .addConverterFactory(GsonConverterFactory.create())
@@ -35,12 +33,12 @@ class PhotoRepository private constructor() {
         flickrApi = retrofit.create(FlickrApi::class.java)
     }
 
-    fun fetchPhotos() : LiveData<List<FlickrPhotoItem>> = getPhotos(fetchPhotosRequest())
+    fun fetchPhotos(): LiveData<List<FlickrPhotoItem>> = getPhotos(fetchPhotosRequest())
 
     fun fetchPhotosRequest(): Call<FlickrResponse> = flickrApi.fetchPhotos()
 
     fun searchPhotos(query: String): LiveData<List<FlickrPhotoItem>> =
-      getPhotos(searchPhotosRequest(query))
+        getPhotos(searchPhotosRequest(query))
 
     fun searchPhotosRequest(query: String): Call<FlickrResponse> = flickrApi.searchPhotos(query)
 
@@ -81,6 +79,6 @@ class PhotoRepository private constructor() {
             }
         }
 
-        fun get() : PhotoRepository = instance!!
+        fun get(): PhotoRepository = instance!!
     }
 }

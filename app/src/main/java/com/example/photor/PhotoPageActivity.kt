@@ -3,8 +3,8 @@ package com.example.photor
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 
 class PhotoPageActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -15,7 +15,6 @@ open class VisibleFragment : Fragment() {
             Timber.d("Notification cancelled.")
             resultCode = Activity.RESULT_CANCELED
         }
-
     }
 
     override fun onStart() {

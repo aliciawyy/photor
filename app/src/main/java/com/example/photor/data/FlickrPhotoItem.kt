@@ -5,13 +5,13 @@ import com.google.gson.annotations.SerializedName
 
 private const val FLICKR_BASE_URL = "https://www.flickr.com/photos/"
 
-data class FlickrPhotoItem (
+data class FlickrPhotoItem(
     var id: String = "",
     var title: String = "",
     @SerializedName("url_s") var url: String = "",
     var owner: String = ""
 ) {
-    val photoPageUri : Uri
+    val photoPageUri: Uri
     get() = Uri.parse(FLICKR_BASE_URL)
         .buildUpon()
         .appendPath(owner)

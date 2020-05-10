@@ -8,7 +8,6 @@ import android.content.Intent
 import androidx.core.app.NotificationManagerCompat
 import timber.log.Timber
 
-
 class NotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         if (resultCode != Activity.RESULT_OK || intent == null) {
@@ -18,6 +17,5 @@ class NotificationReceiver : BroadcastReceiver() {
         val requestCode = intent.getIntExtra(PollWorker.REQUEST_CODE, 0)
         val notification: Notification = intent.getParcelableExtra(PollWorker.NOTIFICATION)!!
         NotificationManagerCompat.from(context!!).notify(requestCode, notification)
-
     }
 }

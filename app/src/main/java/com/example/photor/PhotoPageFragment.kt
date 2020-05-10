@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import android.webkit.WebView
-import android.webkit.WebViewClient
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 
@@ -49,13 +48,11 @@ class PhotoPageFragment : VisibleFragment() {
         }
         webView.loadUrl(photoPageUri.toString())
 
-
-
         return view
     }
 
     companion object {
-        fun newInstance(photoPageUri: Uri) : PhotoPageFragment = PhotoPageFragment().apply {
+        fun newInstance(photoPageUri: Uri): PhotoPageFragment = PhotoPageFragment().apply {
             arguments = Bundle().apply {
                 putParcelable(PHOTO_PAGE_URL, photoPageUri)
             }

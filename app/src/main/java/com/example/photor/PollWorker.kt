@@ -4,7 +4,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.example.photor.data.FlickrPhotoItem
@@ -12,9 +11,8 @@ import com.example.photor.data.PhotoRepository
 import com.example.photor.data.PhotorPreferences
 import timber.log.Timber
 
-
-class PollWorker(private val context: Context, workerParameters: WorkerParameters)
-    : Worker(context, workerParameters){
+class PollWorker(private val context: Context, workerParameters: WorkerParameters) :
+    Worker(context, workerParameters) {
     override fun doWork(): Result {
         val query =
             PhotorPreferences.getStoredQuery(context)

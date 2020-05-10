@@ -1,6 +1,5 @@
 package com.example.photor
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import android.widget.ImageView
@@ -13,8 +12,8 @@ import androidx.work.*
 import com.example.photor.data.FlickrPhotoItem
 import com.example.photor.data.PhotorPreferences
 import com.squareup.picasso.Picasso
-import timber.log.Timber
 import java.util.concurrent.TimeUnit
+import timber.log.Timber
 
 private const val POLL_WORK = "PollWork"
 
@@ -29,7 +28,8 @@ class PhotoGalleryFragment : VisibleFragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_photo_gallery, container, false)
@@ -117,8 +117,8 @@ class PhotoGalleryFragment : VisibleFragment() {
         }
     }
 
-    private inner class PhotoHolder(private val photoImageView: ImageView)
-        : RecyclerView.ViewHolder(photoImageView) {
+    private inner class PhotoHolder(private val photoImageView: ImageView) :
+        RecyclerView.ViewHolder(photoImageView) {
         fun bindPhoto(photoItem: FlickrPhotoItem) {
             photoImageView.setOnClickListener {
 //                val intent = Intent(Intent.ACTION_VIEW, photoItem.photoPageUri)
@@ -130,7 +130,7 @@ class PhotoGalleryFragment : VisibleFragment() {
         }
     }
 
-    private inner class PhotoAdapter(private val photoList: List<FlickrPhotoItem>):
+    private inner class PhotoAdapter(private val photoList: List<FlickrPhotoItem>) :
         RecyclerView.Adapter<PhotoHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoHolder {
             val view = LayoutInflater.from(parent.context)
@@ -145,4 +145,3 @@ class PhotoGalleryFragment : VisibleFragment() {
         }
     }
 }
-
