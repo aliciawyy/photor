@@ -121,7 +121,8 @@ class PhotoGalleryFragment : VisibleFragment() {
         : RecyclerView.ViewHolder(photoImageView) {
         fun bindPhoto(photoItem: FlickrPhotoItem) {
             photoImageView.setOnClickListener {
-                val intent = Intent(Intent.ACTION_VIEW, photoItem.photoPageUri)
+//                val intent = Intent(Intent.ACTION_VIEW, photoItem.photoPageUri)
+                val intent = PhotoPageActivity.newIntent(requireContext(), photoItem.photoPageUri)
                 startActivity(intent)
             }
             Picasso.get().load(photoItem.url)
