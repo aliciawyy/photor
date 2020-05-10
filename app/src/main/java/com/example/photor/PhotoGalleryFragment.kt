@@ -1,5 +1,6 @@
 package com.example.photor
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import android.widget.ImageView
@@ -116,15 +117,19 @@ class PhotoGalleryFragment : VisibleFragment() {
         }
     }
 
-    private class PhotoHolder(private val photoImageView: ImageView)
+    private inner class PhotoHolder(private val photoImageView: ImageView)
         : RecyclerView.ViewHolder(photoImageView) {
         fun bindPhoto(photoItem: FlickrPhotoItem) {
+            photoImageView.setOnClickListener {
+                val intent = Intent(Intent.ACTION_VIEW, photoItem.photoPageUri)
+                startActivity(intent)
+            }
             Picasso.get().load(photoItem.url)
                 .into(photoImageView)
         }
     }
 
-    private class PhotoAdapter(private val photoList: List<FlickrPhotoItem>):
+    private inner class PhotoAdapter(private val photoList: List<FlickrPhotoItem>):
         RecyclerView.Adapter<PhotoHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoHolder {
             val view = LayoutInflater.from(parent.context)
